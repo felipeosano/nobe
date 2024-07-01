@@ -1,23 +1,26 @@
 import path from 'path';
-import { createFile } from '../utils';
+import { capitalize, createFile } from '../utils';
 
 export function generateService(name: string) {
   const baseDir = path.join(process.cwd(), 'src');
 
   const serviceContent = `
-import { I${name.charAt(0).toUpperCase() + name.slice(1)}Service } from '../services.interface/${name}.service.interface';
+import { I${capitalize(name)}Service } from '../services.interfaces/${name}.service.interface';
+import { I${capitalize(name)}Repository } from '../repositories.interfaces/${name}.repository.interface';
 
-export class ${name.charAt(0).toUpperCase() + name.slice(1)}Service implements I${name.charAt(0).toUpperCase() + name.slice(1)}Service{
-// Service logic here
-}
-`.trim();
+export class ${capitalize(name)}Service implements I${capitalize(name)}Service {
+  private ${name}Repository: I${capitalize(name)}Repository;
+
+  constructor(${name}Repository: I${capitalize(name)}Repository) {
+    this.${name}Repository = ${name}Repository;
+  }
+}`.trim();
 
   const serviceInterfaceContent = `
-export interface I${name.charAt(0).toUpperCase() + name.slice(1)}Service {
+export interface I${capitalize(name)}Service {
 // Service interface here
-}
-    `.trim();
+}`.trim();
 
   createFile(path.join(baseDir, 'services'), `${name}.service.ts`, serviceContent);
-  createFile(path.join(baseDir, 'services.interface'), `${name}.service.interface.ts`, serviceInterfaceContent);
+  createFile(path.join(baseDir, 'services.interfaces'), `${name}.service.interface.ts`, serviceInterfaceContent);
 }

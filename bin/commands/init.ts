@@ -1,19 +1,14 @@
-import fs from 'fs';
+import fs, { copyFile } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { getAppContent, getGitignoreContent, getLaunchJsonContent, getTypescriptConfig } from '../content';
 import { Command } from 'commander';
-
-function createFile(dir: string, fileName: string, content: string): void {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  fs.writeFileSync(path.join(dir, fileName), content);
-}
+import { copyNobeFile, createFile } from '../utils';
 
 function init(program: Command): void {
   program
     .command('init <projectName>')
+    .alias('i')
     .description('Initialize a new Node.js project with Express, Prettier, and Nodemon')
     .action((projectName: string) => {
       const projectPath = path.join(process.cwd(), projectName);
@@ -75,6 +70,8 @@ function init(program: Command): void {
       };
       fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
+      const currentMiddlewarePath = path.join(__dirname, '../../bin/middlewares');
+      copyNobeFile(currentMiddlewarePath, path.join(projectPath, 'src/middlewares'), 'response.middleware.ts');
       console.log(`Project '${projectName}' initialized successfully!`);
     });
 }

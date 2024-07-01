@@ -1,22 +1,20 @@
 import path from 'path';
-import { createFile } from '../utils';
+import { capitalize, createFile } from '../utils';
 
 export function generateRepository(name: string) {
   const baseDir = path.join(process.cwd(), 'src');
 
   const repositoryContent = `
-import { I${name.charAt(0).toUpperCase() + name.slice(1)}Repository } from '../repositories.interfaces/${name}.repository.interface';
+import { I${capitalize(name)}Repository } from '../repositories.interfaces/${name}.repository.interface';
 
-export class ${name.charAt(0).toUpperCase() + name.slice(1)}Repository implements I${name.charAt(0).toUpperCase() + name.slice(1)}Repository {
+export class ${capitalize(name)}Repository implements I${capitalize(name)}Repository {
 // Repository logic here
-}
-  `.trim();
+}`.trim();
 
   const repositoryInterfaceContent = `
-export interface I${name.charAt(0).toUpperCase() + name.slice(1)}Repository {
+export interface I${capitalize(name)}Repository {
 // Repository interface here
-}
-  `.trim();
+}`.trim();
 
   createFile(path.join(baseDir, 'repositories'), `${name}.repository.ts`, repositoryContent);
   createFile(

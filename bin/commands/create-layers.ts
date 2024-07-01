@@ -4,6 +4,8 @@ import { generateService } from '../logic/generate-service';
 import { generateRoutes } from '../logic/generate-routes';
 import { generateRepository } from '../logic/generate-repository';
 import { generateDependencyInjection } from '../logic/generate-dependency-injection';
+import { generateModel } from '../logic/generate-model';
+import { generateDto } from '../logic/generate-dto';
 
 function setupGenerateCommand(program: Command): void {
   const generate = program.command('generate').alias('g').description('Generate resources');
@@ -26,6 +28,8 @@ function setupGenerateCommand(program: Command): void {
       generateController(name);
       generateService(name);
       generateRepository(name);
+      generateModel(name);
+      generateDto(name);
       generateDependencyInjection(name);
       console.log(
         `Generated ${name}.controller.ts, ${name}.service.ts, ${name}.repository.ts, and ${name}.routes.ts in /src`

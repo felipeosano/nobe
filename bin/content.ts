@@ -1,15 +1,14 @@
 export function getAppContent() {
-  return `import express from 'express';
-import dotenv from 'dotenv';
-
+  return `import dotenv from 'dotenv';
 dotenv.config();
+import express from 'express';
+import bodyParser from 'body-parser';
+import { responseFormatter } from './middlewares/response.middleware';
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
+app.use(bodyParser.json());
+app.use(responseFormatter);
 
 app.listen(port, () => {
   console.log(\`Server is running on port \${port}\`);

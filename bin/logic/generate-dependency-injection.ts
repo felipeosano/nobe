@@ -15,48 +15,47 @@ import { ${className}Controller } from './controllers/${name}.controller';
 
   const registerContent = `
 container.register({
-  ${className}Service: asClass(${className}Service).singleton(),
   ${className}Repository: asClass(${className}Repository).singleton(),
-  ${className}Controller: asClass(${className}Controller).singleton(),
-});
-  `.trim();
+  ${className}Service: asClass(${className}Service)
+    .inject(() => ({
+      repository: container.cradle.${className}Repository
+    }))
+    .singleton(),
+  ${className}Controller: asClass(${className}Controller)
+    .inject(() => ({
+      service: container.cradle.${className}Service
+    }))
+    .singleton(),
+});`.trim();
 
   if (!fs.existsSync(containerPath)) {
     const initialContent = `
-import awilix from 'awilix';
-import { createContainer, asClass, asValue, asFunction } from 'awilix';
+import { InjectionMode } from 'awilix';
+import { createContainer, asClass, asFunction } from 'awilix';
 
-const container = awilix.createContainer({
-  injectionMode: awilix.InjectionMode.PROXY,
+${importContent}
+
+const container = createContainer({
+  injectionMode: InjectionMode.PROXY,
   strict: true,
 })
 
-${importContent}
 ${registerContent}
 
-export default container;
-    `.trim();
+export default container;`.trim();
 
     createFile(baseDir, 'container.ts', initialContent);
   } else {
     let existingContent = fs.readFileSync(containerPath, { encoding: 'utf8' });
-    const importIndex = existingContent.lastIndexOf('import');
 
-    if (importIndex !== -1) {
-      const nextLineIndex = existingContent.indexOf('\n', importIndex);
-      existingContent =
-        existingContent.substring(0, nextLineIndex + 1) + importContent + existingContent.substring(nextLineIndex);
-    } else {
-      existingContent = importContent + '\n' + existingContent;
-    }
+    const importIndex = existingContent.lastIndexOf('import { createContainer');
+    const nextLineIndex = existingContent.indexOf('\n', importIndex) + 1;
+    existingContent =
+      existingContent.substring(0, nextLineIndex) + importContent + '\n' + existingContent.substring(nextLineIndex);
 
-    const lastIndex = existingContent.lastIndexOf('export default container;');
-    if (lastIndex !== -1) {
-      existingContent =
-        existingContent.substring(0, lastIndex) + registerContent + '\n\n' + existingContent.substring(lastIndex);
-    } else {
-      existingContent += '\n' + registerContent;
-    }
+    const exportIndex = existingContent.lastIndexOf('export default container;');
+    existingContent =
+      existingContent.substring(0, exportIndex) + registerContent + '\n\n' + existingContent.substring(exportIndex);
 
     fs.writeFileSync(containerPath, existingContent, { encoding: 'utf8' });
   }
