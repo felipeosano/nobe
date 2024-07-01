@@ -1,0 +1,24 @@
+{
+  "name": "nobe",
+  "version": "1.0.0",
+  "description": "A CLI tool to initialize Node.js projects",
+  "main": "index.js",
+  "bin": {
+    "nobe": "./dist/nobe.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "author": "Felipe Osano",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "12.1.0",
+    "ejs": "3.1.10",
+    "prettier": "3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.9",
+    "typescript": "5.5.2"
+  }
+}
